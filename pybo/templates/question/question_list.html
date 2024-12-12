@@ -1,0 +1,10 @@
+<!-- 질문 목록 -->
+{% if question_list2 %} <!-- render_template 함수로 실행하는 부분-->
+    <ul> <!-- html 코드-->
+    {% for question in question_list2 %}
+        <li><a href="{{url_for('question.detail',question_id=question.id)}}">{{ question.subject }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>질문이 없습니다.</p>
+{% endif %}
