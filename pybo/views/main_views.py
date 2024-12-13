@@ -3,7 +3,7 @@ from werkzeug.utils import redirect
 
 # models.py에 Question 클래스를 가져와서 사용
 from pybo import db
-from pybo.models import Question
+from pybo.models import Question, User
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
@@ -249,3 +249,28 @@ def delete_question(id):
 
     #4. 결과 반환
     return jsonify({"message":f"Question {id}이 삭제 되었습니다."}), 200
+
+# POST 회원 추가하는 엔드포인트를 추가
+@bp.route('/add_user', methods=['POST'])
+def add_user():
+    # 요청 데이터 가져오기
+    data = request.get_json()
+    user_id = data.get('user_id')
+    password = data.get('password')
+
+    if not user_id or not password:
+        return jsonify({"error":"user_id와 password는 필수항목입니다."}), 400
+
+    # 새로운 User 객체 생성
+    new_user = User(user_id=user_id, password=password)
+    
+    try:
+        # 데이터베이스에 추가
+        db.session.add(new_user)
+        db.session.commit()
+        print (f"User {user_id} 가 추가되었습니다.")
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"error":f"사용자 추가 중 문제가 발생했습니다.:{str(e)}"}), 500
+    #4. 결과 반환
+    return jsonify({"message":f"User {user_id}가 추가되었습니다."}), 201

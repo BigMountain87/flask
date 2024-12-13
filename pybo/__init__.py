@@ -18,7 +18,11 @@ def create_app():
 
     # ORM -> DB와 연관이 됨
     db.init_app(app)
+    with app.app_context():
+        db.create_all()
     migrate.init_app(app, db)
+
+    
     # models.py 파일을 import 사용
     from . import models
 
