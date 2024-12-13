@@ -1,0 +1,9 @@
+{
+    "terminal.integrated.profiles.windows": {
+    "Command Prompt": {
+        "path": "cmd.exe",
+        "args": ["/K", "c:\\Users\\HKIT\\anaconda3\\Scripts\\activate.bat flask"]
+        }
+    }
+    
+}
