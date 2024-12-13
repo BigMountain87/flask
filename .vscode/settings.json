@@ -2,8 +2,8 @@
     "terminal.integrated.profiles.windows": {
     "Command Prompt": {
         "path": "cmd.exe",
-        "args": ["/K", "c:\\Users\\HKIT\\anaconda3\\Scripts\\activate.bat flask"]
+        "args": ["/K", 
+        "c:\\Users\\HKIT\\anaconda3\\Scripts\\activate.bat flask && set FLASK_APP=pybo && set FLASK_DEBUG=true"]
         }
     }
-    
 }
