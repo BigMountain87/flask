@@ -165,3 +165,56 @@ def add_question_post():
 
     #4. 결과 반환
     return jsonify({"message":"추가가 완료되었습니다"}), 201
+
+# PUT 방식 구현
+# http://<주소ip>/change_question/<id>
+    # request의 본문
+    # {
+    #    "subject" : 주제,
+    #    "content" : 내용
+    # }
+    # id와 subject, content를 가져오는 방식이 약간 다름
+@bp.route('/change_question/<int:id>', methods=['PUT'])
+#                              id값
+def change_question():
+    # 1. 요청 데이터 가져오기
+    # JSON 요청에서 "subject, content" 필드를 가져옴
+    print("request : ", request)
+
+    data = request.get_json()
+    print("data : ", data)
+    subject = data.get('subject') if data else None
+    content = data.get('content') if data else None
+
+    # id로 DB에 Question 테이블을 조회해서 
+    # 데이터를 업데이트하는 것이 목적
+
+    # 2. id로 DB에 Question 테이블에 데이터를 조회
+    question = Question.query.get(id)
+
+    # question이 없다면
+    if not question:
+        return jsonify({"error":f"id {id}에 해당하는 데이터가 없습니다."}), 404
+    
+    # 데이터가 존재하면
+    # 데이터를 업데이트 하면 됨
+    if subject: # request에 subject가 있으면 변경
+        question.subject = subject
+    
+    if content: # request에 content가 있으면 변경
+        question.content = content
+
+    try:
+        db.session.commit()
+        print("Commit successful!")
+        
+    except SQLAlchemyError as e:
+        # SQLAlchemyError를 사용하기 위해서
+        # 상단에 
+        # from sqlalchemy.exc import SQLAlchemyError
+        db.session.rollback() # 문제 발생시 롤백
+        print(f"Update failed: {str(e)}")
+        return jsonify({"error":"업데이트 중 문제가 발생하였습니다."+str(e)}), 500
+
+    #4. 결과 반환
+    return jsonify({"message":f"Question {id}이 업데이트 되었습니다."}), 200
