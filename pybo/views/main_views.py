@@ -175,8 +175,9 @@ def add_question_post():
     # }
     # id와 subject, content를 가져오는 방식이 약간 다름
 @bp.route('/change_question/<int:id>', methods=['PUT'])
-#                              id값
-def change_question():
+#                          |------id값
+# 함수에     id값 입력------|
+def change_question(id):
     # 1. 요청 데이터 가져오기
     # JSON 요청에서 "subject, content" 필드를 가져옴
     print("request : ", request)
@@ -218,3 +219,33 @@ def change_question():
 
     #4. 결과 반환
     return jsonify({"message":f"Question {id}이 업데이트 되었습니다."}), 200
+
+
+# DELETE
+@bp.route('/delete_question/<int:id>', methods=['DELETE'])
+#                          |------id값
+# 함수에     id값 입력------|
+def delete_question(id):
+    # 1. id로 DB에 Question 테이블에 데이터를 조회
+    question = Question.query.get(id)
+
+    # question이 없다면
+    if not question:
+        return jsonify({"error":f"id {id}에 해당하는 데이터가 없습니다."}), 404
+    
+    # 2. 데이터 삭제
+    try:
+        db.session.delete(question)
+        db.session.commit()
+        print(f"Question {id} has been deleted.")
+        
+    except SQLAlchemyError as e:
+        # SQLAlchemyError를 사용하기 위해서
+        # 상단에 
+        # from sqlalchemy.exc import SQLAlchemyError
+        db.session.rollback() # 문제 발생시 롤백
+        print(f"Update failed: {str(e)}")
+        return jsonify({"error":f"삭제 중 문제가 발생하였습니다. :"+str(e)}), 500
+
+    #4. 결과 반환
+    return jsonify({"message":f"Question {id}이 삭제 되었습니다."}), 200
